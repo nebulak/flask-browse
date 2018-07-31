@@ -12,7 +12,7 @@ SRP6a
 
 ### GET /ls/{:path}
 
-- [ ] implemented
+- [x] implemented
 
 **Parameters:**
 
@@ -20,10 +20,13 @@ SRP6a
 
 **Returns:** Array of file descriptions
 
+**curl:**
+
+		curl -X GET -i 'http://127.0.0.1:8000/ls?path=testdir'
 
 ### GET /files/{:path}
 
-- [ ] implemented
+- [x] implemented
 
 **Parameters:**
 
@@ -58,9 +61,9 @@ SRP6a
 
 **Returns:** RC
 
-### POST /mv/{:from_path}
+### POST /cp
 
-- [ ] implemented
+- [x] implemented
 
 **Parameters:**
 
@@ -69,22 +72,29 @@ SRP6a
 
 **Returns:** RC
 
+**curl:**
 
-### POST /mvdir/{:from_path}
+		curl -X POST -i 'http://127.0.0.1:8000/cp' --data 'from_path=test.txt&to_path=testdir/test2.txt'
 
-- [ ] implemented
+### POST /mv
+
+- [x] implemented
 
 **Parameters:**
 
-  * *string* from_path: base64-encoded path to directory
+  * *string* from_path: base64-encoded path to file
   * *string* to_path: new path
 
 **Returns:** RC
 
+**curl:**
+
+		curl -X POST -i 'http://127.0.0.1:8000/cp' --data 'from_path=test.txt&to_path=test2.txt'
+
 
 ### POST /mkdir/{:path}
 
-- [ ] implemented
+- [x] implemented
 
 **Parameters:**
 
@@ -92,6 +102,10 @@ SRP6a
   * *string* dirname: directory name
 
 **Returns:** RC
+
+**curl:**
+
+		curl -X POST -i 'http://127.0.0.1:8000/mkdir' --data 'path=&dirname=testdir'
 
 ### POST /mk/{:path}
 

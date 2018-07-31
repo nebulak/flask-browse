@@ -2,9 +2,10 @@ import os
 
 from flask import Flask, request, abort, jsonify, send_from_directory
 from werkzeug.utils import secure_filename
+from shutil import copyfile, move, copytree
 
 
-UPLOAD_DIRECTORY = './data'
+UPLOAD_DIRECTORY = os.path.join(os.getcwd(), 'data')
 
 if not os.path.exists(UPLOAD_DIRECTORY):
     os.makedirs(UPLOAD_DIRECTORY)
@@ -17,13 +18,89 @@ api = Flask(__name__)
 def list_files():
     """Endpoint to list files on the server."""
     path = request.args.get('path')
+    print(path)
     files = []
-    for filename in os.listdir(UPLOAD_DIRECTORY):
-        path = os.path.join(UPLOAD_DIRECTORY, filename)
+    folders = []
+
+    search_path = os.path.join(UPLOAD_DIRECTORY, path)
+    if is_safe_path(UPLOAD_DIRECTORY, search_path) == False:
+        abort(404)
+
+    for filename in os.listdir(search_path):
+        path = os.path.join(search_path, filename)
         if os.path.isfile(path):
             files.append(filename)
-    return jsonify(files)
+        else:
+            folders.append(filename)
+    resp = {}
+    resp['files'] = files
+    resp['folders'] = folders
+    return jsonify(resp)
 
+@api.route('/mkdir', methods=['POST'])
+def make_dir():
+    """Endpoint to list files on the server."""
+    path = request.form.get('path')
+    dirname = request.form.get('dirname')
+
+    target_path = ""
+
+    if path is None:
+        target_path = UPLOAD_DIRECTORY
+    else:
+        target_path = os.path.join(UPLOAD_DIRECTORY, path)
+    folder_path = os.path.join(target_path, dirname)
+    if is_safe_path(UPLOAD_DIRECTORY, folder_path) == False:
+        abort(404)
+    os.mkdir(folder_path);
+    rc = {}
+    rc['rc'] = 0
+    rc['message'] = "OK"
+    return jsonify(rc)
+
+@api.route('/cp', methods=['POST'])
+def copy_route():
+    """Endpoint to list files on the server."""
+    from_path = request.form.get('from_path')
+    to_path = request.form.get('to_path')
+
+    full_from_path = ""
+    full_to_path = ""
+    full_from_path = os.path.join(UPLOAD_DIRECTORY, from_path)
+    full_to_path = os.path.join(UPLOAD_DIRECTORY, to_path)
+    if is_safe_path(UPLOAD_DIRECTORY, full_from_path) == False:
+        abort(404)
+    if is_safe_path(UPLOAD_DIRECTORY, full_to_path) == False:
+        abort(404)
+    if os.path.isfile(full_from_path):
+        copyfile(full_from_path, full_to_path)
+    else:
+        copytree(full_from_path, full_to_path)
+    rc = {}
+    rc['rc'] = 0
+    rc['message'] = "OK"
+    return jsonify(rc)
+
+@api.route('/mv', methods=['POST'])
+def move_route():
+    """Endpoint to list files on the server."""
+    from_path = request.form.get('from_path')
+    to_path = request.form.get('to_path')
+
+    full_from_path = ""
+    full_to_path = ""
+    full_from_path = os.path.join(UPLOAD_DIRECTORY, from_path)
+    full_to_path = os.path.join(UPLOAD_DIRECTORY, to_path)
+    if is_safe_path(UPLOAD_DIRECTORY, full_from_path) == False:
+        abort(404)
+    if is_safe_path(UPLOAD_DIRECTORY, full_to_path) == False:
+        abort(404)
+    if os.path.isfile(full_from_path):
+        move(full_from_path, full_to_path)
+    rc = {}
+    rc['rc'] = 0
+    rc['message'] = "OK"
+    return jsonify(rc)
 
 @api.route('/files/<path:path>')
 def get_file(path):
