@@ -41,7 +41,7 @@ def list_files():
 def make_dir():
     """Endpoint to list files on the server."""
     path = request.form.get('path')
-    dirname = request.form.get('dirname')
+    dirname = request.form.get('name')
 
     target_path = ""
 
@@ -53,6 +53,75 @@ def make_dir():
     if is_safe_path(UPLOAD_DIRECTORY, folder_path) == False:
         abort(404)
     os.mkdir(folder_path);
+    rc = {}
+    rc['rc'] = 0
+    rc['message'] = "OK"
+    return jsonify(rc)
+
+@api.route('/mk', methods=['POST'])
+def make_file():
+    """Endpoint to list files on the server."""
+    path = request.form.get('path')
+    filename = request.form.get('name')
+
+    target_path = ""
+
+    if path is None:
+        target_path = UPLOAD_DIRECTORY
+    else:
+        target_path = os.path.join(UPLOAD_DIRECTORY, path)
+    folder_path = os.path.join(target_path, filename)
+    if is_safe_path(UPLOAD_DIRECTORY, folder_path) == False:
+        abort(404)
+    f=open(folder_path, 'w+')
+    f.close()
+    #os.mkdir(folder_path);
+    rc = {}
+    rc['rc'] = 0
+    rc['message'] = "OK"
+    return jsonify(rc)
+
+@api.route('/rm', methods=['POST'])
+def remove_file():
+    """Endpoint to list files on the server."""
+    path = request.form.get('path')
+
+    target_path = ""
+
+    if path is None:
+        abort(404)
+    else:
+        target_path = os.path.join(UPLOAD_DIRECTORY, path)
+    #folder_path = os.path.join(target_path, filename)
+    if is_safe_path(UPLOAD_DIRECTORY, target_path) == False:
+        abort(404)
+    os.remove(target_path)
+    #f=open(folder_path, 'w+')
+    #f.close()
+    #os.mkdir(folder_path);
+    rc = {}
+    rc['rc'] = 0
+    rc['message'] = "OK"
+    return jsonify(rc)
+
+@api.route('/rmdir', methods=['POST'])
+def remove_folder():
+    """Endpoint to list files on the server."""
+    path = request.form.get('path')
+    rmtree = int(request.form.get('recursive'))
+    target_path = ""
+
+    if path is None:
+        abort(404)
+
+    target_path = os.path.join(UPLOAD_DIRECTORY, path)
+    if is_safe_path(UPLOAD_DIRECTORY, target_path) == False:
+        abort(404)
+    if rmtree == 1:
+        shutil.rmtree(target_path)
+    else:
+        os.rmdir(target_path)
+
     rc = {}
     rc['rc'] = 0
     rc['message'] = "OK"

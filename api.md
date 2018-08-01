@@ -1,12 +1,8 @@
 # API
 
-##### TODOs
-
-- rename command for files and folders
-
 ## Authentication
 
-SRP6a
+Basic Authentication
 
 ## Endpoints
 
@@ -98,28 +94,32 @@ SRP6a
 
 **Parameters:**
 
-  * *string* path: base64-encoded path to file
-  * *string* dirname: directory name
+  * *string* path: path
+  * *string* name: directory name
 
 **Returns:** RC
 
 **curl:**
 
-		curl -X POST -i 'http://127.0.0.1:8000/mkdir' --data 'path=&dirname=testdir'
+		curl -X POST -i 'http://127.0.0.1:8000/mkdir' --data 'path=&name=testdir'
 
 ### POST /mk/{:path}
 
-- [ ] implemented
+- [x] implemented
 
 **Parameters:**
 
-  * *string* path: base64-encoded path to file
-  * *string* filename: filename
+  * *string* path: path to file
+  * *string* name: filename
 
 **Returns:** RC
 
+**curl:**
+
+		curl -X POST -i 'http://127.0.0.1:8000/mk' --data 'path=&name=testfile.txt'
+
 ### POST /rm/{:path}
-- [ ] implemented
+- [x] implemented
 
 **Parameters:**
 
@@ -128,12 +128,12 @@ SRP6a
 **Returns:** RC
 
 ### POST /rmdir/{:path}
-- [ ] implemented
+- [x] implemented
 
 **Parameters:**
 
   * *string* path: base64-encoded path to file
-  * *bool* recursive: recursively delete folder and contents
+  * *int* recursive: recursively delete folder and contents (1: true, else: false)
 
 **Returns:** RC
 
